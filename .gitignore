@@ -1,0 +1,32 @@
+# Claude-generated drafts
+.claudedocs/
+
+# Node / pnpm / yarn (in case skill development pulls in JS tooling)
+node_modules/
+dist/
+.turbo/
+.next/
+.vite/
+*.tsbuildinfo
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.uv/
+.ruff_cache/
+.pytest_cache/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local

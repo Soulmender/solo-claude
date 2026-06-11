@@ -1,0 +1,19 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "solo-claude",
+  "description": "Claude Code marketplace for solo developers and small teams working in a monorepo, tracking issues on GitHub, and writing docs directly in the repo. One plugin, opinionated defaults.",
+  "owner": {
+    "name": "Solo Claude Maintainers",
+    "email": "p.znuderl@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "solo-claude",
+      "source": "./plugins/solo-claude",
+      "description": "Single plugin bundling solo-friendly skills: code-review, release-notes, documentation-check, docs-update, repo-audit, repo-verifier, docs-author, github-issue-creator, github-issue-implementer, workflow-hygiene-check, scaffold-repo-meta, decision-ledger, and the planning chain (requirements-intake, package-context-scan, solution-design, delivery-plan, plan-new-work). Ships a CLAUDE.md template and the GitHub MCP endpoint.",
+      "version": "0.1.0",
+      "category": "shared",
+      "tags": ["solo", "monorepo", "github", "docs", "planning"]
+    }
+  ]
+}

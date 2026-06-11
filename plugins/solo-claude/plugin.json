@@ -1,0 +1,22 @@
+{
+  "name": "solo-claude",
+  "version": "0.1.0",
+  "description": "Skills for solo developers and small teams on a monorepo with GitHub Issues and in-repo docs. Seventeen skills: code-review, release-notes, documentation-check, docs-update, repo-audit, repo-verifier, docs-author, github-issue-creator, github-issue-implementer, workflow-hygiene-check, scaffold-repo-meta, decision-ledger, plus the planning chain (requirements-intake, package-context-scan, solution-design, delivery-plan) and the plan-new-work orchestrator. Ships a CLAUDE.md template and the GitHub MCP endpoint.",
+  "author": {
+    "name": "Solo Claude Maintainers",
+    "email": "p.znuderl@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": ["solo", "monorepo", "github", "issues", "docs", "code-review", "release-notes", "planning", "audit"],
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/"
+    }
+  },
+  "components": {
+    "skills": "./skills",
+    "agents": "./agents",
+    "commands": "./commands"
+  }
+}
