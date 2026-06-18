@@ -1,6 +1,6 @@
 ---
 name: repo-audit
-description: Full end-to-end audit of a monorepo or single-package repo. Detects layout (pnpm/yarn workspaces, turborepo, nx, uv, poetry, or single-package) from .repo-meta.yaml or filesystem signals. For monorepos, walks each package and reports per-package plus cross-package integration. For each package, investigates API surface, domain model, business logic, dependencies, build and test setup, and quality signals. Consults .decisions.yaml so previously-recorded team decisions annotate matching findings rather than re-surface as new issues. Writes Markdown and JSON reports to docs/audit by default. Use when onboarding to an unfamiliar repo, before a major release, or as a quarterly health check. Trigger phrases include "audit this repo", "deep-dive on the monorepo", "what is this codebase", "review the project end to end".
+description: Full end-to-end audit of a monorepo or single-package repo. Detects layout (pnpm/yarn workspaces, turborepo, nx, uv, poetry, or single-package) from .repo-meta.yaml or filesystem signals. For monorepos, walks each package and reports per-package plus cross-package integration. For each package, investigates API surface, domain model, business logic, dependencies, build and test setup, and quality signals. Consults .decisions.yaml so previously-recorded team decisions annotate matching findings rather than re-surface as new issues. Records a quality baseline (coverage, finding counts, dependency health, hotspots) appended to a history file so trends show and regressions raise an alarm. Writes Markdown and JSON reports to docs/audit by default. Use when onboarding to an unfamiliar repo, before a major release, or as a quarterly health check. Trigger phrases include "audit this repo", "deep-dive on the monorepo", "review the project end to end", "is code quality getting better or worse".
 ---
 
 # repo-audit
@@ -154,9 +154,30 @@ The headline summarizes: green / yellow / red, with a count per severity, and th
 }
 ```
 
-## Phase 7 — Update `.repo-meta.yaml`'s audit block
+## Phase 7 — Quality baseline and trend
 
-After writing, update the `audit:` block with `last_run`, `commit`, `report_md`, `report_json`. Show a diff; write only on confirmation.
+A single audit is a snapshot; a growing codebase needs to know whether it's getting better or worse. Capture a compact **baseline** each run and append it to a history file so trends are visible.
+
+Record into `docs/audit/quality-history.json` (`schema_version: "1.0"`) one entry per run:
+
+- `commit`, `generated_at`.
+- `coverage` — overall and per-package test coverage (from `--coverage` if cheap, else existing reports; `null` where unknown, never guessed).
+- `findings` — counts by severity (`blocker`/`major`/`minor`/`nit`), overall and per package.
+- `dependencies` — count outdated / deprecated / security-flagged.
+- `hotspots` — count of high-fan-in modules and any dependency cycles (reuse `code-map.json` if present).
+- `surface` — public-export count and orphan (dead-surface) count when `code-map.json` is available.
+
+Then compare against the previous entry and surface **deltas** in the report:
+
+- **Regression alarm** — coverage dropped, blocker/major count rose, a new cycle appeared, or dead surface grew. Call these out at the top of the report, loudly.
+- **Improvement** — the inverse; note it so cleanup work is visibly rewarded.
+- **Flat** — no material change.
+
+History is append-only; never rewrite past entries. If `quality-history.json` is absent, this run establishes the baseline and the report says so (no deltas yet). The trend feeds `improvement-advisor`, which can prioritize against a worsening metric.
+
+## Phase 8 — Update `.repo-meta.yaml`'s audit block
+
+After writing, update the `audit:` block with `last_run`, `commit`, `report_md`, `report_json`, and `quality_history`. Show a diff; write only on confirmation.
 
 ## Edge cases and rules
 

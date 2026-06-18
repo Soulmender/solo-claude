@@ -2,7 +2,7 @@
 
 The single plugin shipped by the `solo-claude` marketplace. See the marketplace-root `README.md` for the overview; this file documents the plugin's contents.
 
-## Skills (17)
+## Skills (24)
 
 **Utility (4):**
 - `code-review` — adaptive-depth diff review.
@@ -13,7 +13,18 @@ The single plugin shipped by the `solo-claude` marketplace. See the marketplace-
 **Audit chain (3):**
 - `repo-audit` — monorepo-aware full audit.
 - `repo-verifier` — audit vs. closed-issue requirements.
-- `docs-author` — generate / refresh docs from audit.
+- `docs-author` — generate / refresh docs from audit; embeds `patterns.json` into `docs/architecture.md` when present.
+
+**Convention & quality (3):**
+- `design-patterns` — catalog the idioms/conventions actually in use; writes `docs/patterns.md` + `patterns.json`.
+- `claude-md-doctor` — audit & repair CLAUDE.md against the repo's real conventions; diff-gated, preservation-aware.
+- `improvement-advisor` — prioritized improvement/refactor backlog (impact × effort); optional `github-issue-creator` handoff.
+
+**Codebase understanding (4):**
+- `code-map` — persistent, queryable symbol + reference index; `docs/code-map.{json,md}`. Incremental refresh.
+- `flow-docs` — end-to-end sequence/flow docs for critical paths; `docs/flows/*.md`.
+- `domain-glossary` — domain vocabulary with synonym/collision flags; `docs/glossary.{md,json}`.
+- `package-context-author` — scoped per-package agent context (`packages/<pkg>/CLAUDE.md`); delta-only against the root.
 
 **GitHub workflow (5):**
 - `github-issue-creator` — structured issue creation.
@@ -29,9 +40,9 @@ The single plugin shipped by the `solo-claude` marketplace. See the marketplace-
 - `delivery-plan` — phased epic + child issues breakdown.
 - `plan-new-work` — orchestrator with gates and downstream options.
 
-## Slash commands (14)
+## Slash commands (21)
 
-`/review`, `/release`, `/docs-check`, `/edit-doc`, `/audit`, `/verify`, `/docs`, `/create-issue`, `/implement`, `/hygiene`, `/scaffold`, `/record-decision`, `/extract-decisions`, `/plan`.
+`/review`, `/release`, `/docs-check`, `/edit-doc`, `/audit`, `/verify`, `/docs`, `/patterns`, `/claude-md`, `/improve`, `/code-map`, `/flows`, `/glossary`, `/pkg-context`, `/create-issue`, `/implement`, `/hygiene`, `/scaffold`, `/record-decision`, `/extract-decisions`, `/plan`.
 
 ## MCP servers
 

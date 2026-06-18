@@ -2,7 +2,7 @@
 
 A Claude Code marketplace for solo developers and small teams working in a monorepo, tracking issues on GitHub, and writing docs directly in the repo.
 
-One plugin (`solo-claude`). Seventeen skills. Fourteen slash commands. One CLAUDE.md template. Opinionated defaults so you don't have to configure your way in.
+One plugin (`solo-claude`). Twenty-four skills. Twenty-one slash commands. One CLAUDE.md template. Opinionated defaults so you don't have to configure your way in.
 
 ## What's inside
 
@@ -10,6 +10,8 @@ One plugin (`solo-claude`). Seventeen skills. Fourteen slash commands. One CLAUD
 |---|---|
 | **Utility** | `code-review`, `release-notes`, `documentation-check`, `docs-update` |
 | **Audit chain** | `repo-audit`, `repo-verifier`, `docs-author` |
+| **Convention & quality** | `design-patterns`, `claude-md-doctor`, `improvement-advisor` |
+| **Codebase understanding** | `code-map`, `flow-docs`, `domain-glossary`, `package-context-author` |
 | **GitHub workflow** | `github-issue-creator`, `github-issue-implementer`, `workflow-hygiene-check`, `scaffold-repo-meta`, `decision-ledger` |
 | **Planning chain** | `requirements-intake`, `package-context-scan`, `solution-design`, `delivery-plan`, `plan-new-work` (orchestrator) |
 
@@ -73,7 +75,7 @@ After scaffolding, the following land for free:
 - `.gitignore` updated to include `.claudedocs/` (Claude's draft folder).
 - A suggestion of what to run next.
 
-## The two chains
+## The chains
 
 ### Backward-looking (audit existing code)
 
@@ -84,6 +86,35 @@ repo-verifier       → docs/audit/verification.{md,json}
        ↓
 docs-author         → README.md + docs/architecture.md + docs/runbook.md + docs/adrs/ stubs
 ```
+
+### Convention & quality (document the house style, then improve it)
+
+`repo-audit`'s `audit.json` feeds these; each also runs standalone.
+
+```
+design-patterns     → docs/patterns.md + patterns.json
+       ├─→ docs-author       enriches docs/architecture.md with "Design patterns in use"
+       ├─→ claude-md-doctor  → fixes CLAUDE.md so agents follow the established conventions
+       └─→ improvement-advisor → docs/improvements.md + improvements.json
+                                   └─→ (opt-in) github-issue-creator
+```
+
+- `/patterns` — catalog the design patterns and conventions the repo actually uses.
+- `/claude-md` — audit & repair CLAUDE.md against that reality (diff-gated, preservation-aware).
+- `/improve` — turn audit + pattern findings into a prioritized, sequenced backlog.
+
+### Codebase understanding (context for a growing codebase)
+
+Depth context that coding agents read while working. `audit.json` / `patterns.json` feed these; each runs standalone.
+
+```
+code-map            → docs/code-map.{json,md}        symbols + who-calls-what; blast radius
+flow-docs           → docs/flows/*.md                end-to-end sequences for critical paths
+domain-glossary     → docs/glossary.{md,json}        domain terms; synonym & collision flags
+package-context-author → packages/<pkg>/CLAUDE.md    local conventions where an agent edits
+```
+
+Two mechanisms keep this current as the code grows: `documentation-check` maintains a git-wired **freshness ledger** (flags docs whose code changed since they were verified), and `github-issue-implementer` runs a **doc-impact** step after each change (offers to refresh the docs the diff invalidated). `scaffold-repo-meta` records a `context_index` so agents know which artifact answers which question.
 
 ### Forward-looking (plan new work)
 
@@ -112,6 +143,13 @@ Run the forward chain end-to-end via `/plan <brief>`. Each step in both chains i
 | `/audit` | Full repo audit |
 | `/verify` | Verify the audit against closed issues / specs |
 | `/docs` | Generate README + docs/ + ADR stubs from the audit |
+| `/patterns` | Catalog the repo's design patterns and conventions |
+| `/claude-md` | Audit & repair CLAUDE.md against the repo's real conventions |
+| `/improve` | Prioritized improvement / refactor backlog |
+| `/code-map` | Build / refresh the queryable code map |
+| `/flows` | Document a critical path end to end (sequence diagram) |
+| `/glossary` | Extract the domain glossary from the code |
+| `/pkg-context` | Generate scoped per-package agent context |
 | `/create-issue` | Create one or more GitHub issues |
 | `/implement` | Plan + execute an issue under supervision |
 | `/hygiene` | Workflow hygiene digest |
@@ -154,6 +192,7 @@ If you're maintaining this marketplace:
 
 ## Documentation
 
+- [`docs/usage-guide.md`](docs/usage-guide.md) — how to use the skills day to day: the foundation order, the per-change loop, and what to run when.
 - [`docs/repo-meta-yaml-schema.md`](docs/repo-meta-yaml-schema.md) — canonical schema for the per-repo metadata file.
 - [`docs/onboarding.md`](docs/onboarding.md) — day-one setup for a new machine / new repo.
 - [`docs/contributing-skills.md`](docs/contributing-skills.md) — writing or modifying a skill.

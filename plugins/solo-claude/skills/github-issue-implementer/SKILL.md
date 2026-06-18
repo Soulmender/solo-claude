@@ -1,6 +1,6 @@
 ---
 name: github-issue-implementer
-description: Read a GitHub issue, detect the current repo's monorepo layout and conventions, verify the issue against the repo's actual state, produce a structured implementation plan, wait for the developer to approve, then execute the plan under their supervision. Shows diffs step by step, never auto-commits, never auto-pushes. Hard plan-approval gate before any file is written. Hard pre-commit gate that lets the user revise. Picks up the issue from the current branch name if not specified. Use when picking up a tracked issue to implement. Trigger phrases include "implement issue 123", "let's work on the open issue", "pick up the current branch's issue", "drive this issue end to end".
+description: Read a GitHub issue, detect the current repo's monorepo layout and conventions, verify the issue against the repo's actual state, produce a structured implementation plan, wait for the developer to approve, then execute the plan under their supervision. Shows diffs step by step, never auto-commits, never auto-pushes. Hard plan-approval gate before any file is written. Hard pre-commit gate that lets the user revise. After the change, flags which living docs the diff invalidates (architecture, patterns, flows, code-map, glossary, ADRs, per-package context) and offers to update them so docs don't drift with every merge. Picks up the issue from the current branch name if not specified. Use when picking up a tracked issue to implement. Trigger phrases include "implement issue 123", "let's work on the open issue", "pick up the current branch's issue", "drive this issue end to end".
 ---
 
 # github-issue-implementer
@@ -136,6 +136,17 @@ Closes #<id>
 ```
 
 Write to `.claudedocs/issues/<issue-id>/pr-description.md`. The user pastes into the PR when opening.
+
+## Phase 9 — Doc impact (close the loop)
+
+A change that ships without updating the docs it invalidated is how a growing codebase's context rots. After the diff is final (committed or staged), compute **doc impact** from the set of files touched:
+
+- Cross-reference the touched paths against the freshness ledger's `watches` (see `documentation-check`) and the known living docs: `docs/architecture.md`, `docs/patterns.md`, `docs/flows/*`, `docs/code-map.json`, `docs/glossary.md`, affected `packages/<pkg>/CLAUDE.md`, and any ADR whose subject the change alters.
+- Report the impacted docs, each with *why* it's likely stale (e.g. "added a new export from `@my-app/api` → code-map and the api package context are out of date"; "changed the checkout sequence → `docs/flows/checkout.md` no longer matches").
+- Offer, per doc, to hand off to the owning skill: `code-map` refresh, `flow-docs` re-trace, `docs-author` for architecture/README, `package-context-author` for the package file, `design-patterns` if a new idiom was introduced, `decision-ledger` / an ADR if a real decision was made. The user picks; this skill orchestrates the hand-off but does not silently rewrite docs.
+- If the user declines, offer instead to stamp nothing (leaving the docs flagged as drifted in the ledger) so the staleness stays visible rather than forgotten.
+
+This phase is a suggestion gate, never automatic, and never blocks the commit or PR.
 
 ## Edge cases and rules
 

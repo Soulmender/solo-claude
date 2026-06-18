@@ -83,11 +83,29 @@ audit:
   report_json: docs/audit/audit.json # pinned by user, optional
   verification_md: docs/audit/verification.md
   verification_json: docs/audit/verification.json
+  quality_history: docs/audit/quality-history.json  # auto-managed append-only trend
 
 contributors:                        # optional, for ownership context
   - name: Peter
     handle: PeterZnuderl
     role: maintainer
+
+context_index:                       # auto-managed by scaffold-repo-meta and the context skills
+  - path: docs/architecture.md
+    read_when: "you need the structural map — packages, boundaries, external systems"
+    generated_by: docs-author
+  - path: docs/patterns.md
+    read_when: "you need the house style — how errors, state, modules are done here"
+    generated_by: design-patterns
+  - path: docs/code-map.json
+    read_when: "you need to find a symbol's definition, its callers, or blast radius"
+    generated_by: code-map
+  - path: docs/flows/
+    read_when: "you need to understand how a path behaves end to end before changing it"
+    generated_by: flow-docs
+  - path: docs/glossary.md
+    read_when: "you need the meaning of a domain term or the canonical name to use"
+    generated_by: domain-glossary
 ```
 
 ## Field-by-field
@@ -139,11 +157,15 @@ Used as a fallback identifier when GitHub MCP isn't authenticated. Human-readabl
 
 ### `audit` (auto-managed)
 
-The audit / verifier / docs-author skills maintain this block. The user pins paths (`report_md`, `report_json`, etc.) on first run; subsequent runs update `last_run` and `commit`.
+The audit / verifier / docs-author skills maintain this block. The user pins paths (`report_md`, `report_json`, etc.) on first run; subsequent runs update `last_run` and `commit`. `quality_history` points at the append-only quality-trend file `repo-audit` maintains (coverage, finding counts, dependency health, hotspots per run); `improvement-advisor` reads it to prioritize against worsening metrics.
 
 ### `contributors` (optional)
 
 Useful when the repo has more than one contributor and ownership matters for review or planning. Skills surface contributor handles in audit reports and docs when this is set.
+
+### `context_index` (auto-managed)
+
+A map of the agent-facing context artifacts that exist in the repo, each paired with a `read_when` hint and the `generated_by` skill that owns it. `scaffold-repo-meta` seeds it from what's present; the context skills (`docs-author`, `design-patterns`, `code-map`, `flow-docs`, `domain-glossary`, `package-context-author`) update their own entry on promotion. Its purpose is navigation: an agent reads the index to decide which artifact answers its question instead of rescanning the whole repo. Entries pointing at missing files are flagged on the next scaffold run, not silently removed.
 
 ## Auto-discovery
 
