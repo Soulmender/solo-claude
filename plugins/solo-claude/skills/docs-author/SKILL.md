@@ -1,6 +1,6 @@
 ---
 name: docs-author
-description: Generate or update living documentation from the audit JSON (and optionally verification JSON). Produces README.md (voice-preserving), docs/architecture.md, docs/runbook.md, per-package READMEs, and draft ADR stubs under docs/adrs. Honors .repo-meta.yaml's docs.layout (docs-folder-plus-readme, mkdocs, docusaurus, readme-only) and updates nav config when applicable. Preserves user-written sections via the same conventions as docs-update. Diff before write. Use after repo-audit when documentation needs to be (re)generated from audit findings. Trigger phrases include "update the docs from the audit", "write the README from the audit JSON", "regenerate the docs", "draft ADR stubs from the audit's architectural findings", "write up the runbook".
+description: Generate or update living documentation from the audit JSON (and optionally verification JSON and patterns JSON). Produces README.md (voice-preserving), docs/architecture.md, docs/runbook.md, per-package READMEs, and draft ADR stubs under docs/adrs. When design-patterns has produced patterns.json, enriches docs/architecture.md with a "Design patterns in use" section and pattern-aware diagrams. Honors .repo-meta.yaml's docs.layout (docs-folder-plus-readme, mkdocs, docusaurus, readme-only) and updates nav config when applicable. Preserves user-written sections via the same conventions as docs-update. Diff before write. Use after repo-audit when documentation needs to be (re)generated from audit findings. Trigger phrases include "update the docs from the audit", "write the README from the audit JSON", "regenerate the docs", "draft ADR stubs from the audit's architectural findings", "write up the runbook", "document the architecture with our design patterns".
 ---
 
 # docs-author
@@ -22,7 +22,7 @@ Drafts land in `.claudedocs/docs/` first; promotion is gated.
 
 ## Phase 1 — Choose artifacts
 
-Read `audit.json` (required). Read `verification.json` if available — it enriches the "recently shipped" and "false-Done" sections.
+Read `audit.json` (required). Read `verification.json` if available — it enriches the "recently shipped" and "false-Done" sections. Read `patterns.json` (from `design-patterns`) if available — it feeds the architecture doc's "Design patterns in use" section. If `patterns.json` is absent and the user is generating `docs/architecture.md`, mention that running `design-patterns` first yields a richer architecture doc; proceed without it otherwise.
 
 Ask the user which artifacts to generate:
 
@@ -72,7 +72,8 @@ Sections under preserved-region headings are not touched. New factual content re
 - **Cross-package boundaries** — what each package exposes, what it consumes internally.
 - **External integrations** — APIs, databases, queues, third-party services.
 - **Significant patterns** — caching, queueing, state management, auth.
-- **Open architectural questions** — pulled from audit's open-questions section.
+- **Design patterns in use** — present only when `patterns.json` is available. Narrate the repo's house style from the catalog: one subsection per `repo-wide`/`partial` pattern (convention + a representative evidence anchor), plus a short "conventions worth pinning" note pointing at `contested`/`consistent-undocumented` patterns and suggesting `claude-md-doctor` to encode them. When `patterns.json` has a meaningful dependency or boundary picture, render the package diagram annotated with the dominant module-boundary convention rather than a bare graph. Never restate every pattern verbatim — summarize and link to `docs/patterns.md` for the full catalog.
+- **Open architectural questions** — pulled from audit's open-questions section, plus any `contested` patterns from `patterns.json` (genuinely-open style decisions belong here).
 
 ### docs/runbook.md
 
@@ -146,6 +147,7 @@ If `docs.layout` is `mkdocs` or `docusaurus` and the artifact is new (not previo
 
 - **vs. `docs-update`** — that skill edits one specific file based on a verbal description. This skill regenerates structured artifacts from an audit. Different inputs, different cadence.
 - **vs. `documentation-check`** — that skill diagnoses doc hygiene; this skill repairs.
+- **vs. `design-patterns`** — that skill produces the pattern catalog (`patterns.json` + `docs/patterns.md`); this skill consumes it to narrate the "Design patterns in use" section of `docs/architecture.md`. Run `design-patterns` first for a richer architecture doc.
 
 ## What this skill never does
 

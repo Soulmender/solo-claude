@@ -75,7 +75,7 @@ In a new Claude Code session:
 
 ```
 /plugin list
-/skill list           # should list all 17 solo-claude skills
+/skill list           # should list all 24 solo-claude skills
 /agent list           # currently empty for this marketplace
 ```
 

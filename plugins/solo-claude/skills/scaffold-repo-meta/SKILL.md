@@ -1,6 +1,6 @@
 ---
 name: scaffold-repo-meta
-description: Generate or extend a .repo-meta.yaml file at the repo root. Auto-discovers the github owner and repo from the git remote, detects monorepo layout from pnpm-workspace.yaml, package.json workspaces, turbo.json, nx.json, pyproject.toml workspaces, or single-package fallback. Detects docs layout from filesystem (docs folder vs README only, mkdocs.yml, docusaurus config). Reads existing tags to infer versioning style. Prompts only for what cannot be inferred. Use when onboarding a repo to solo-claude, when a skill detects a missing .repo-meta.yaml, or for refreshing the file when conventions change. Trigger phrases include "scaffold the repo meta", "set up .repo-meta.yaml", "onboard this repo", "generate the meta file".
+description: Generate or extend a .repo-meta.yaml file at the repo root. Auto-discovers the github owner and repo from the git remote, detects monorepo layout from pnpm-workspace.yaml, package.json workspaces, turbo.json, nx.json, pyproject.toml workspaces, or single-package fallback. Detects docs layout from filesystem (docs folder vs README only, mkdocs.yml, docusaurus config). Reads existing tags to infer versioning style. Maintains a context_index block that lists which agent-facing context artifacts exist (architecture, patterns, flows, code-map, glossary, runbook, per-package context) and when to read each, so an agent can navigate the generated context instead of rescanning. Prompts only for what cannot be inferred. Use when onboarding a repo to solo-claude, when a skill detects a missing .repo-meta.yaml, or for refreshing the file when conventions change. Trigger phrases include "scaffold the repo meta", "set up .repo-meta.yaml", "onboard this repo", "generate the meta file", "update the context index".
 ---
 
 # scaffold-repo-meta
@@ -64,6 +64,9 @@ For each detected package: capture `{name, path, role}`. Infer `role`:
 ### Contributors
 - `git shortlog -sne --no-merges | head -10` to get top contributors. Surface, ask the user which to list as collaborators (or skip).
 
+### Context index
+- Detect which agent-facing context artifacts already exist and record them in a `context_index` block: `docs/architecture.md`, `docs/patterns.md`, `docs/flows/`, `docs/code-map.json`, `docs/glossary.md`, `docs/runbook.md`, `docs/audit/`, and per-package `CLAUDE.md`/`CONTEXT.md` files. Each entry pairs the path with a one-line "read this when…" so an agent knows which artifact answers which question instead of rescanning the repo. This is the map of the context the other skills generate. On extend runs, reconcile it: add newly-present artifacts, mark missing ones, and let owning skills update their own entry on promotion.
+
 ## Phase 3 — Confirm with the user
 
 Render the auto-discovered draft. Highlight inferred fields. Ask:
@@ -89,6 +92,7 @@ After write:
 Tell the user what they can now run:
 
 - `repo-audit` — full audit.
+- `design-patterns` then `code-map` — catalog conventions and index the codebase (the foundation other context skills build on).
 - `documentation-check` — quick doc hygiene.
 - `workflow-hygiene-check` — issue tracker hygiene.
 - `/plan <brief>` — start a planning chain.

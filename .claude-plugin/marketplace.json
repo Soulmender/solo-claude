@@ -10,10 +10,10 @@
     {
       "name": "solo-claude",
       "source": "./plugins/solo-claude",
-      "description": "Single plugin bundling solo-friendly skills: code-review, release-notes, documentation-check, docs-update, repo-audit, repo-verifier, docs-author, github-issue-creator, github-issue-implementer, workflow-hygiene-check, scaffold-repo-meta, decision-ledger, and the planning chain (requirements-intake, package-context-scan, solution-design, delivery-plan, plan-new-work). Ships a CLAUDE.md template and the GitHub MCP endpoint.",
-      "version": "0.1.0",
+      "description": "Single plugin bundling solo-friendly skills: code-review, release-notes, documentation-check, docs-update, repo-audit, repo-verifier, docs-author, design-patterns, claude-md-doctor, improvement-advisor, code-map, flow-docs, domain-glossary, package-context-author, github-issue-creator, github-issue-implementer, workflow-hygiene-check, scaffold-repo-meta, decision-ledger, and the planning chain (requirements-intake, package-context-scan, solution-design, delivery-plan, plan-new-work). Ships a CLAUDE.md template and the GitHub MCP endpoint.",
+      "version": "0.3.0",
       "category": "shared",
-      "tags": ["solo", "monorepo", "github", "docs", "planning"]
+      "tags": ["solo", "monorepo", "github", "docs", "planning", "conventions", "context"]
     }
   ]
 }
